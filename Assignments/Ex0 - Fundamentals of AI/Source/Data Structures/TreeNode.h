@@ -1,3 +1,6 @@
+#include <queue>
+#include <stack>
+using namespace std;
 
 
 // TreeNode class should go in the "ufl_cap4053::fundamentals" namespace!
@@ -140,16 +143,141 @@ namespace ufl_cap4053 { namespace fundamentals {
 			}
 		}
 
+		//Used this link to help me remember how to set up the breadthFirstTraverse
+		//stackoverflow.com/questions/17939247/breadth-first-traversal-with-binary-search-tree-c
 		void breadthFirstTraverse(void (*dataFunction)(const T)) const {
+		
+			if (this != nullptr) {
+				dataFunction(this->data);
+			}
 
+			queue<TreeNode<T>*> q;
+			
+			q.push(this->currChild);
+			TreeNode* temp = this->currChild;
+			while (temp->sibling != nullptr) {
+				temp = temp->sibling;
+				q.push(temp);
+			}
+			
+			while (!q.empty()) {
+				temp = q.front();
+				q.pop();
+				dataFunction(temp->data);
+
+				if (temp->currChild != nullptr) {
+					temp = temp->currChild;
+					q.push(temp);
+					while (temp->sibling != nullptr) {
+						temp = temp->sibling;
+						q.push(temp);
+					}
+				}
+			}
+/*
+
+			if (this != nullptr) {
+				dataFunction(this->data);
+				size_t num = getChildCount();
+				TreeNode* temp = this->currChild;
+				TreeNode* curr = temp;
+				while (num != 0) {
+					while (curr != nullptr) {
+						dataFunction(curr->data);
+						curr = curr->sibling;
+					}
+					num = 0;
+					curr = temp;
+					
+					while (num == 0) {
+						if (curr->sibling == nullptr) {
+							break;
+						}
+						curr = curr->sibling;
+						num = curr->getChildCount();
+					}
+
+					
+					temp = curr;
+					curr = curr->currChild;
+				}
+
+			}
+
+	*/		
 		}
 
 		void preOrderTraverse(void (*dataFunction)(const T)) const {
 
+			if (this != nullptr) {
+				dataFunction(this->data);
+			}
+			size_t num = 0;
+			queue<TreeNode<T>*> q;
+
+			q.push(this->currChild);
+			TreeNode* temp = this->currChild;
+			TreeNode* top = this->currChild;
+
+			while (!q.empty()) {
+				temp = q.front();
+				q.pop();
+				dataFunction(temp->data);
+				
+				if (temp->currChild != nullptr) {
+					top = temp;
+					temp = temp->currChild;
+				}
+				else if (temp->sibling != nullptr){
+					temp = temp->sibling;
+				}
+				else {
+					temp = top->sibling;
+				}
+				if (temp != nullptr) {
+					q.push(temp);
+				}
+			}
+
 		}
 
 		void postOrderTraverse(void (*dataFunction)(const T)) const {
+			
 
+			stack<TreeNode<T>*> s;
+			
+			s.push(this->currChild);
+			TreeNode* temp = this->currChild;
+			TreeNode* top = this->currChild;
+			size_t num = this->getChildCount();
+			bool checked = false;
+
+			while (!s.empty()) {
+				
+				
+				if (temp->currChild != nullptr && !checked) {
+					top = temp;
+					s.push(temp->currChild);
+					temp = temp->currChild;
+					
+				}
+				else {
+					temp = s.top();
+					dataFunction(temp->data);
+					s.pop();
+					if (temp->sibling != nullptr) {
+						temp = temp->sibling;
+						s.push(temp);
+						
+					}
+					else if (temp->sibling == nullptr && temp->currChild != nullptr) {
+						checked = true;
+					}
+					
+					
+				}
+			}
+			dataFunction(this->data);
 		}
 
 	};
