@@ -74,6 +74,10 @@ namespace ufl_cap4053 {
 				head = nullptr;
 				tail = nullptr;
 			}
+			~LinkedList(){
+				clear();
+			}
+
 
 			Iterator begin() const {
 				return Iterator(head);
@@ -158,6 +162,7 @@ namespace ufl_cap4053 {
 				}
 				head = nullptr;
 				tail = nullptr;
+				
 			}
 
 			bool contains(T element) const {
